@@ -1,3 +1,6 @@
+import joblib
+import os
+
 from src.data_loader import load_telecom_data
 from src.features import add_custom_features
 from src.preprocessing import split_data, get_preprocessor
@@ -39,4 +42,12 @@ save_model_visuals(y_test, probs, preds, auc)
 report = f"Model: Random Forest Tuned\nAUC: {auc:.4f}\nBest Params: {grid.best_params_}"
 write_report(report)
 
+if not os.path.exists('models'):
+    os.makedirs('models')
+
+# Salvează creierul modelului
+joblib.dump(best_model, 'models/best_model.pkl')
+print("✓ Modelul a fost salvat în folderul models/best_model.pkl")
+
 print("Proiectul a fost modularizat și executat cu succes!")
+
