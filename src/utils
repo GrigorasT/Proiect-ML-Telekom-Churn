@@ -1,0 +1,55 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from sklearn.metrics import confusion_matrix, roc_curve
+
+def save_eda_plots(df, output_path='results/eda_plots/'):
+    """PART 2: EXPLORATORY DATA ANALYSIS"""
+    X = df.drop('Churn', axis=1)
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.suptitle('EDA Overview', fontsize=16, fontweight='bold')
+
+    # Tenure hist
+    axes[0, 0].hist(X['tenure'], bins=30, edgecolor='black', color='steelblue')
+    axes[0, 0].set_title('Distribuție Tenure')
+
+    # Contract bar
+    churn_by_contract = df.groupby('Contract')['Churn'].mean()
+    axes[0, 1].bar(churn_by_contract.index, churn_by_contract.values, color='orange')
+    axes[0, 1].set_title('Rată Churn per Contract')
+
+    # MonthlyCharges boxplot
+    sns.boxplot(x='Churn', y='MonthlyCharges', data=df, ax=axes[1, 0])
+    axes[1, 0].set_title('MonthlyCharges vs Churn')
+
+    # Internet Service pie
+    counts = X['InternetService'].value_counts()
+    axes[1, 1].pie(counts, labels=counts.index, autopct='%1.1f%%')
+    axes[1, 1].set_title('Internet Service')
+
+    plt.tight_layout()
+    plt.savefig(f'{output_path}01_eda_overview.png')
+    plt.close()
+
+def save_model_visuals(y_test, best_prob, best_pred, auc_roc, output_path='results/model_results/'):
+    """PART 7: EVALUARE FINALĂ (CM și ROC)"""
+    # Confusion Matrix
+    cm = confusion_matrix(y_test, best_pred)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+    plt.savefig(f'{output_path}04_confusion_matrix.png')
+    plt.close()
+
+    # ROC Curve
+    fpr, tpr, _ = roc_curve(y_test, best_prob)
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, label=f'AUC = {auc_roc:.4f}')
+    plt.plot([0, 1], [0, 1], '--')
+    plt.legend()
+    plt.savefig(f'{output_path}05_roc_curve.png')
+    plt.close()
+
+def write_report(report_text, file_path='results/summary.txt'):
+    """Salvează raportul final în format text."""
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(report_text)
