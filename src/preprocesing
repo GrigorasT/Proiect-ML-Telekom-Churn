@@ -1,0 +1,21 @@
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+
+def get_preprocessor(numeric_features, categorical_features):
+    """Definește transformările pentru coloane."""
+    return ColumnTransformer(
+        transformers=[
+            ('num', StandardScaler(), numeric_features),
+            ('cat', OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore'), categorical_features)
+        ]
+    )
+
+def split_data(df, target_column='Churn', test_size=0.3, random_state=42):
+    """Împarte datele în Train și Test."""
+    X = df.drop(target_column, axis=1)
+    y = df[target_column]
+    
+    return train_test_split(
+        X, y, test_size=test_size, random_state=random_state, stratify=y
+    )
