@@ -1,6 +1,5 @@
 import joblib
 import os
-
 from src.data_loader import load_telecom_data
 from src.features import add_custom_features
 from src.preprocessing import split_data, get_preprocessor
@@ -10,6 +9,9 @@ from sklearn.metrics import roc_auc_score, recall_score, precision_score, f1_sco
 
 #Config
 RANDOM_STATE = 42
+os.makedirs('results/eda_plots', exist_ok=True)
+os.makedirs('results/model_results', exist_ok=True)
+os.makedirs('models', exist_ok=True)
 
 #1.Load & EDA
 df = load_telecom_data(random_state=RANDOM_STATE)
@@ -22,7 +24,6 @@ df = add_custom_features(df)
 X_train, X_test, y_train, y_test = split_data(df)
 num_cols = ['tenure', 'MonthlyCharges', 'TotalCharges', 'SeniorCitizen', 'PaperlessBilling', 'AvgCostPerMonth', 'IsNewCustomer']
 cat_cols = ['Contract', 'PaymentMethod', 'InternetService', 'TechSupport', 'OnlineSecurity']
-
 preprocessor = get_preprocessor(num_cols, cat_cols)
 X_train_proc = preprocessor.fit_transform(X_train)
 X_test_proc = preprocessor.transform(X_test)
@@ -42,12 +43,7 @@ save_model_visuals(y_test, probs, preds, auc)
 report = f"Model: Random Forest Tuned\nAUC: {auc:.4f}\nBest Params: {grid.best_params_}"
 write_report(report)
 
-if not os.path.exists('models'):
-    os.makedirs('models')
-
 #Salveaza creierul modelului
 joblib.dump(best_model, 'models/best_model.pkl')
 print("✓ Modelul a fost salvat în folderul models/best_model.pkl")
-
 print("Proiectul a fost modularizat si executat cu succes!")
-
