@@ -8,14 +8,14 @@ from src.models import train_baseline_models, run_grid_search
 from src.utils import save_eda_plots, save_model_visuals, write_report
 from sklearn.metrics import roc_auc_score, recall_score, precision_score, f1_score, accuracy_score
 
-# Config
+#Config
 RANDOM_STATE = 42
 
-# 1. Load & EDA
+#1.Load & EDA
 df = load_telecom_data(random_state=RANDOM_STATE)
 save_eda_plots(df)
 
-# 2. Features
+#2.Features
 df = add_custom_features(df)
 
 # 3. Preprocess
@@ -27,17 +27,17 @@ preprocessor = get_preprocessor(num_cols, cat_cols)
 X_train_proc = preprocessor.fit_transform(X_train)
 X_test_proc = preprocessor.transform(X_test)
 
-# 4. Train & Tune
+#4.Train & Tune
 lr, dt, rf = train_baseline_models(X_train_proc, y_train)
 grid = run_grid_search(X_train_proc, y_train)
 best_model = grid.best_estimator_
 
-# 5. Evaluate
+#5.Evaluate
 probs = best_model.predict_proba(X_test_proc)[:, 1]
 preds = best_model.predict(X_test_proc)
 auc = roc_auc_score(y_test, probs)
 
-# 6. Save Results
+#6.Save Results
 save_model_visuals(y_test, probs, preds, auc)
 report = f"Model: Random Forest Tuned\nAUC: {auc:.4f}\nBest Params: {grid.best_params_}"
 write_report(report)
@@ -45,9 +45,9 @@ write_report(report)
 if not os.path.exists('models'):
     os.makedirs('models')
 
-# Salvează creierul modelului
+#Salveaza creierul modelului
 joblib.dump(best_model, 'models/best_model.pkl')
 print("✓ Modelul a fost salvat în folderul models/best_model.pkl")
 
-print("Proiectul a fost modularizat și executat cu succes!")
+print("Proiectul a fost modularizat si executat cu succes!")
 
